@@ -1,0 +1,12 @@
+{
+    "name": "Example App",
+    "description": "Example App Description",
+    "parameters": [
+      {
+        "name": "inputText",
+        "label": "Input Text",
+        "helpText": "Input text for example",
+        "isOptional": true
+      }
+    ]
+  }
