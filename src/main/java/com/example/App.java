@@ -39,7 +39,6 @@ public class App {
         .apply("Print elements",
             MapElements.into(TypeDescriptors.strings()).via(x -> {
               LOG.info(x);
-              //System.out.println(x);
               return x;
             }));
   }
