@@ -1,6 +1,7 @@
 # Build directories
 build/
 target/
+all.tgz
 
 # IDEs
 .classpath

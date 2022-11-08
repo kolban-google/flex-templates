@@ -1,18 +1,25 @@
-PROJECT_ID=kolban-dataflow6
-BUCKET_NAME=kolban-dataflow6-tmp
+PROJECT_ID=kolban-dataflow7
+BUCKET_NAME=kolban-dataflow7-tmp
 REGION=us-central1
 REPOSITORY=myrepo
 VPC_NAME=myvpc
 WORKER_SERVICE_ACCOUNT=worker@$(PROJECT_ID).iam.gserviceaccount.com
 JAR=target/myapp-1.0.jar
 all:
-	echo "Hi!"
+	@echo "services - Setup the services for the project"
+	@echo "build-code"
+	@echo "build-flex"
+	@echo "run-flex"
+	@echo "build-docker"
+	@echo "build-flex-manual"
+	@echo "run-flex-manual"
 
 services:
 	gcloud services enable artifactregistry.googleapis.com \
 		cloudbuild.googleapis.com \
 		compute.googleapis.com \
-		dataflow.googleapis.com
+		dataflow.googleapis.com \
+		--project=$(PROJECT_ID)
 
 build-code:
 	mvn clean package
@@ -33,4 +40,26 @@ run-flex:
 	gcloud dataflow flex-template run "example-app-$(shell date +%Y%m%d-%H%M%S)" \
 		--project=$(PROJECT_ID) \
     	--template-file-gcs-location=gs://$(BUCKET_NAME)/dataflow/flextemplate1.json \
+		--region=$(REGION)
+
+build-docker:
+	tar -cvzf all.tgz Dockerfile target/myapp-1.0.jar
+	gcloud builds submit all.tgz \
+		--project=$(PROJECT_ID) \
+		--region=$(REGION) \
+		--tag=$(REGION)-docker.pkg.dev/$(PROJECT_ID)/$(REPOSITORY)/dataflow/manual-myapp
+
+build-flex-manual:
+	gcloud dataflow flex-template build gs://$(BUCKET_NAME)/dataflow/flextemplate-manual.json \
+		--image=$(REGION)-docker.pkg.dev/$(PROJECT_ID)/$(REPOSITORY)/dataflow/manual-myapp:latest \
+    	--sdk-language=JAVA \
+    	--metadata-file=metadata.json \
+    	--service-account-email=$(WORKER_SERVICE_ACCOUNT) \
+    	--network=$(VPC_NAME) \
+    	--project $(PROJECT_ID)
+
+run-flex-manual:
+	gcloud dataflow flex-template run "example-app-$(shell date +%Y%m%d-%H%M%S)" \
+		--project=$(PROJECT_ID) \
+    	--template-file-gcs-location=gs://$(BUCKET_NAME)/dataflow/flextemplate-manual.json \
 		--region=$(REGION)
