@@ -63,3 +63,12 @@ run-flex-manual:
 		--project=$(PROJECT_ID) \
     	--template-file-gcs-location=gs://$(BUCKET_NAME)/dataflow/flextemplate-manual.json \
 		--region=$(REGION)
+
+list-jobs:
+	gcloud dataflow jobs list --project=$(PROJECT_ID) --region=$(REGION)
+
+describe-job:
+	gcloud dataflow jobs describe 2022-11-08_08_01_10-5446430905305015812 --project=$(PROJECT_ID) --region=$(REGION) --format=json --full
+
+show-job:
+	gcloud dataflow jobs show 2022-11-08_08_01_10-5446430905305015812 --project=$(PROJECT_ID) --region=$(REGION) --format=json
