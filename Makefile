@@ -13,6 +13,7 @@ all:
 	@echo "build-docker"
 	@echo "build-flex-manual"
 	@echo "run-flex-manual"
+	@echo "show-job"
 
 services:
 	gcloud services enable artifactregistry.googleapis.com \
